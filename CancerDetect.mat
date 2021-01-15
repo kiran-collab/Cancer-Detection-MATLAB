@@ -1,0 +1,44 @@
+clear all;
+close all;
+rgb = imread(&#39;image4.jpg&#39;);
+figure
+imshow(rgb);
+pause
+gray_image = rgb2gray(rgb);
+
+imshow(gray_image);
+pause
+[centers, radii] = imfindcircles(rgb,[35
+60],&#39;ObjectPolarity&#39;,&#39;dark&#39;,&#39;Sensitivity&#39;,0.9); %k mean segmentation
+imshow(rgb);
+pause
+h = viscircles(centers,radii);
+cell=length(centers);
+pause
+red=rgb(:,:,1);green= rgb(:,:,2); blue= rgb(:,:,3);
+p=impixel(rgb);
+out=red&gt;25 &amp; red&lt;123 &amp;green&lt;135 &amp; blue&gt;167 &amp; blue&lt;201;
+imshow(out);
+pause
+out1=imfill(out,&#39;holes&#39;); %noise removal and filling holes
+imshow(out1);
+pause
+out2=bwmorph(out1,&#39;erode&#39;); % thresholding
+imshow(out2);
+pause
+out3=bwmorph(out2,&#39;dilate&#39;,4);
+out3=imfill(out3,&#39;holes&#39;);
+imshow(out3);
+out3=im2bw(out3);
+[l,NUM]=bwlabel(out3,4); % connecting objects
+cancer=(NUM/cell)*100;
+if cancer&lt;100
+  disp(&#39;initial stage&#39;);
+  disp(&#39;cancer percentage is&#39;)
+  disp(cancer);
+%elseif cancer&gt;25 &amp;&amp; cancer&lt;75
+%disp(&#39;cancer percentage is&#39;)
+%disp(cancer);
+else 
+  disp(&#39;Cancer cells not found&#39;);
+end
